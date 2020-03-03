@@ -1,0 +1,41 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <RootNamespace>StackExchange.Contrib.Profiling.Storage</RootNamespace>
+    <NoWarn>$(NoWarn);1591</NoWarn>
+    <Version>1.0.0-alpha</Version>
+    <Authors>Gowon Patterson</Authors>
+    <Description>MiniProfiler: Integration for Microsoft.Extensions.Logging</Description>
+    <Copyright>© Gowon Patterson. All rights reserved.</Copyright>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
+  </PropertyGroup>
+
+  <PropertyGroup Label="NuspecProperties">
+    <NeutralLanguage>en-US</NeutralLanguage>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/gowon/MiniProfiler.Contrib.Logging</RepositoryUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageTags>miniprofiler profiling extensions logging</PackageTags>
+    <PackageProjectUrl>https://github.com/gowon/MiniProfiler.Contrib.Logging</PackageProjectUrl>
+  </PropertyGroup>
+
+  <PropertyGroup Label="SourceLink">
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
+
+  <ItemGroup Label="SourceLink">
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.2" />
+    <PackageReference Include="MiniProfiler.Shared" Version="4.1.0" />
+  </ItemGroup>
+
+</Project>
