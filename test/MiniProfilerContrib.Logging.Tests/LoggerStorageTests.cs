@@ -13,13 +13,6 @@ namespace StackExchange.Contrib.Profiling.Storage
 {
     public class LoggerStorageTests
     {
-        private static readonly ILoggerFactory LoggerFactory = Microsoft.Extensions.Logging.LoggerFactory.Create(
-            builder =>
-                builder
-                    .AddConsole()
-                    .AddDebug()
-                    .SetMinimumLevel(LogLevel.Trace));
-
         private static void TestMultiThreaded(MiniProfiler profiler)
         {
             static void DoWork()
@@ -52,9 +45,16 @@ namespace StackExchange.Contrib.Profiling.Storage
         [Fact]
         public async Task OtherMethods()
         {
+            var loggerFactory = LoggerFactory.Create(builder =>
+                builder
+                    .AddSerilog(new LoggerConfiguration()
+                        .MinimumLevel.Verbose()
+                        .WriteTo.InMemory()
+                        .CreateLogger()));
+
             MiniProfiler.Configure(new MiniProfilerOptions
             {
-                Storage = new LoggerStorage(LoggerFactory)
+                Storage = new LoggerStorage(loggerFactory)
             });
 
             var profiler = MiniProfiler.StartNew(nameof(Save));
@@ -78,7 +78,7 @@ namespace StackExchange.Contrib.Profiling.Storage
         [Fact]
         public void Save()
         {
-            var loggerFactory = Microsoft.Extensions.Logging.LoggerFactory.Create(builder =>
+            var loggerFactory = LoggerFactory.Create(builder =>
                 builder
                     .AddSerilog(new LoggerConfiguration()
                         .MinimumLevel.Verbose()
@@ -87,7 +87,7 @@ namespace StackExchange.Contrib.Profiling.Storage
 
             MiniProfiler.Configure(new MiniProfilerOptions
             {
-                Storage = new LoggerStorage(LoggerFactory)
+                Storage = new LoggerStorage(loggerFactory)
             });
 
             var profiler = MiniProfiler.StartNew(nameof(Save));
@@ -106,7 +106,7 @@ namespace StackExchange.Contrib.Profiling.Storage
         [Fact]
         public async Task SaveAsync()
         {
-            var loggerFactory = Microsoft.Extensions.Logging.LoggerFactory.Create(builder =>
+            var loggerFactory = LoggerFactory.Create(builder =>
                 builder
                     .AddSerilog(new LoggerConfiguration()
                         .MinimumLevel.Verbose()
@@ -115,7 +115,7 @@ namespace StackExchange.Contrib.Profiling.Storage
 
             MiniProfiler.Configure(new MiniProfilerOptions
             {
-                Storage = new LoggerStorage(LoggerFactory)
+                Storage = new LoggerStorage(loggerFactory)
             });
 
             var profiler = MiniProfiler.StartNew(nameof(SaveAsync));
@@ -134,7 +134,7 @@ namespace StackExchange.Contrib.Profiling.Storage
         [Fact]
         public void SaveWithLogLevelUnderMinimum()
         {
-            var loggerFactory = Microsoft.Extensions.Logging.LoggerFactory.Create(builder =>
+            var loggerFactory = LoggerFactory.Create(builder =>
                 builder
                     .AddSerilog(new LoggerConfiguration()
                         .MinimumLevel.Warning()
@@ -143,7 +143,7 @@ namespace StackExchange.Contrib.Profiling.Storage
 
             MiniProfiler.Configure(new MiniProfilerOptions
             {
-                Storage = new LoggerStorage(LoggerFactory)
+                Storage = new LoggerStorage(loggerFactory)
             });
 
             var profiler = MiniProfiler.StartNew(nameof(Save));
