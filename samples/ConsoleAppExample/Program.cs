@@ -1,60 +1,63 @@
-﻿namespace ConsoleAppExample
-{
-    using System.Data.Common;
-    using System.Data.SQLite;
-    using System.Net;
-    using Dapper;
-    using Microsoft.Extensions.Logging;
-    using Microsoft.Extensions.Logging.Debug;
-    using StackExchange.Contrib.Profiling.Storage;
-    using StackExchange.Profiling;
-    using StackExchange.Profiling.Data;
+﻿using System;
+using System.Data.Common;
+using System.Data.SQLite;
+using System.Net;
+using Dapper;
+using Microsoft.Extensions.Logging;
+using StackExchange.Contrib.Profiling.Storage;
+using StackExchange.Profiling;
+using StackExchange.Profiling.Data;
 
+namespace ConsoleAppExample
+{
     internal class Program
     {
         private static void Main(string[] args)
         {
+            var loggerFactory = LoggerFactory.Create(builder =>
+                builder
+                    .AddConsole()
+                    .AddDebug()
+                    .SetMinimumLevel(LogLevel.Trace));
+
             MiniProfiler.Configure(new MiniProfilerOptions
             {
-                Storage = new LoggingProvider(new DebugLoggerProvider().CreateLogger(nameof(ConsoleAppExample)),
-                    LogLevel.Debug)
+                Storage = new LoggerStorage(loggerFactory, LogLevel.Debug)
             });
 
-            var mp = MiniProfiler.StartNew("Test");
+            var profiler = MiniProfiler.StartNew("Sample Profile");
 
-            using (mp.Step("Level 1"))
-            using (var conn = GetConnection())
+            using (profiler.Step("Many operations"))
+            using (var conn = GetConnection(profiler))
             {
                 conn.Query<long>("select 1");
 
-                using (mp.Step("Level 2"))
+                using (profiler.Step("Nested operation"))
                 {
                     conn.Query<long>("select 1");
                 }
 
                 using (var wc = new WebClient())
-                using (mp.CustomTiming("http", "GET https://google.com"))
+                using (profiler.CustomTiming("http", "GET https://google.com"))
                 {
                     wc.DownloadString("https://google.com");
                 }
             }
 
-            mp.Stop();
+            profiler.Stop();
+
+            Console.ReadKey();
         }
 
-        public static DbConnection GetConnection()
+        public static DbConnection GetConnection(MiniProfiler profiler)
         {
-            DbConnection cnn = new SQLiteConnection("Data Source=:memory:");
+            var connection = new SQLiteConnection("Data Source=:memory:");
 
             // to get profiling times, we have to wrap whatever connection we're using in a ProfiledDbConnection
-            // when MiniProfiler.Current is null, this connection will not record any database timings
-            if (MiniProfiler.Current != null)
-            {
-                cnn = new ProfiledDbConnection(cnn, MiniProfiler.Current);
-            }
-
-            cnn.Open();
-            return cnn;
+            // when profiler is null, this connection will not record any database timings
+            var profiled = new ProfiledDbConnection(connection, profiler);
+            profiled.Open();
+            return profiled;
         }
     }
 }

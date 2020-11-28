@@ -5,9 +5,9 @@
     <LangVersion>latest</LangVersion>
     <RootNamespace>StackExchange.Contrib.Profiling.Storage</RootNamespace>
     <NoWarn>$(NoWarn);1591</NoWarn>
-    <Version>1.0.0</Version>
+    <Version>2.0.0</Version>
     <Authors>Gowon Patterson</Authors>
-    <Description>MiniProfiler: Integration for Microsoft.Extensions.Logging</Description>
+    <Description>Save MiniProfiler results into a Microsoft.Extensions.Logging logger.</Description>
     <Copyright>© Gowon Patterson. All rights reserved.</Copyright>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
